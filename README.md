@@ -31,5 +31,43 @@ This MCP (Model Context Protocol) server provides integration between Fibery and
 
 3. Install dependencies:
    ```bash
-   uv add "mcp[cli]"
+   uv sync
    ```
+   
+### 🔌 MCP Integration
+
+Add this configuration to your MCP client config file:
+
+```json
+{
+    "mcpServers": {
+        "fibery-mcp-server": {
+            "command": "/Users/max/.local/bin/uv",
+            "args": [
+                "--directory",
+                "path/to/your/fibery-mcp-server",
+                "run",
+                "fibery-mcp-server",
+                "--fibery-host",
+                "your-domain.fibery.io",
+                "--fibery-api-token",
+                "your-api-token"
+            ]
+        }
+    }
+}
+```
+
+### Available Tools
+
+#### 1. List Databases (`list_databases`)
+
+Retrieves a list of all databases available in your Fibery workspace.
+
+#### 2. Describe Database (`describe_database`)
+
+Provides a detailed breakdown of a specific database's structure, showing all fields with their titles, names, and types.
+
+#### 3. Query Database (`query_database`)
+
+Offers powerful, flexible access to your Fibery data through the Fibery API.
