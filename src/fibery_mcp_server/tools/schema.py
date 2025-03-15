@@ -7,8 +7,8 @@ from fibery_mcp_server.utils import databases_from_schema
 
 schema_tool_name = "list_databases"
 schema_tool = mcp.types.Tool(
-    name="list_databases",
-    description="Get list of all databases (their names) in user's Fibery workspace",
+    name=schema_tool_name,
+    description="Get list of all databases (their names) in user's Fibery workspace (schema)",
     inputSchema={"type": "object"},
 )
 
