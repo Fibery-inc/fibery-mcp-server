@@ -1,16 +1,15 @@
 import sys
 import logging
 import asyncio
-from typing import List
+from typing import List, Dict, Any
 
 import mcp
 import click
-from pydantic import AnyUrl
 from mcp.server import Server, NotificationOptions
 from mcp.server.models import InitializationOptions
 
 from .fibery_client import FiberyClient
-from .resources import list_all_resources, handle_resource
+from .tools import handle_list_tools, handle_tool_call
 
 
 async def serve(fibery_host: str, fibery_api_token: str) -> Server:
@@ -19,14 +18,18 @@ async def serve(fibery_host: str, fibery_api_token: str) -> Server:
     logger = logging.getLogger("fibery-mcp-server")
     fibery_client = FiberyClient(fibery_host, fibery_api_token)
 
-    @server.list_resources()
-    async def list_resources() -> List[mcp.types.Resource]:
-        return list_all_resources()
+    @server.list_tools()
+    async def list_tools() -> List[mcp.types.Resource]:
+        return handle_list_tools()
 
-    @server.read_resource()
-    async def read_resource(uri: AnyUrl) -> str:
-        logger.info(f'Requested resource with uri: {uri}')
-        return await handle_resource(fibery_client, uri)
+    @server.call_tool()
+    async def call_tool(name: str, arguments: Dict[str, Any]) -> List[mcp.types.TextContent]:
+        logger.info(f'Requested resource with uri: {name}')
+        try:
+            return await handle_tool_call(fibery_client, name, arguments)
+        except Exception as e:
+            logger.error(f"Tool error: {str(e)}")
+            return [mcp.types.TextContent(type="text", text=f"Error: {str(e)}")]
 
     return server
 
