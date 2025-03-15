@@ -9,13 +9,13 @@ from mcp.server.models import InitializationOptions
 import click
 import asyncio
 from typing import List
-from fibery_service import FiberyClient
-from utils import databases_from_schema
+from .fibery_client import FiberyClient
+from .utils import databases_from_schema
 
 
 async def serve(fibery_host: str, fibery_api_token: str) -> Server:
-    server = Server("Fibery")
-    logger = logging.getLogger(__name__)
+    server = Server("fibery-mcp-server")
+    logger = logging.getLogger("fibery-mcp-server")
     fibery_client = FiberyClient(fibery_host, fibery_api_token)
 
     @server.list_resources()
@@ -85,7 +85,3 @@ def main(fibery_host: str, fibery_api_token: str):
             )
 
     asyncio.run(_run())
-
-
-if __name__ == '__main__':
-    asyncio.run(main())

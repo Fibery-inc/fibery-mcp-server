@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 load_dotenv()
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from src.fibery_service import FiberyClient
+from src.fibery_mcp_server.fibery_client import FiberyClient
 
 pytestmark = pytest.mark.skipif(
     not os.environ.get("FIBERY_HOST") or not os.environ.get("FIBERY_API_TOKEN"),
