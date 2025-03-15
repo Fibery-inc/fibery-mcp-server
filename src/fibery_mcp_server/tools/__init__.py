@@ -5,10 +5,11 @@ import mcp
 from ..fibery_client import FiberyClient
 from fibery_mcp_server.tools.schema import schema_tool_name, schema_tool, handle_schema
 from fibery_mcp_server.tools.database import database_tool_name, database_tool, handle_database
+from fibery_mcp_server.tools.query import query_tool_name, query_tool, handle_query
 
 
 def handle_list_tools():
-    return [schema_tool, database_tool]
+    return [schema_tool, database_tool, query_tool]
 
 
 async def handle_tool_call(fibery_client: FiberyClient, name: str, arguments: Dict[str, Any]):
@@ -16,6 +17,8 @@ async def handle_tool_call(fibery_client: FiberyClient, name: str, arguments: Di
         return await handle_schema(fibery_client)
     elif name == database_tool_name:
         return await handle_database(fibery_client, arguments)
+    elif name == query_tool_name:
+        return await handle_query(fibery_client, arguments)
     else:
         return [mcp.types.TextContent(type="text", text=f"Error: Unknown tool {name}")]
 

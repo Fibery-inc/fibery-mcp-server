@@ -69,3 +69,18 @@ class FiberyClient:
         schema_data = result["data"]
         return schema_data
 
+    async def execute_command(self, command: str, args: Dict[str, Any]) -> Dict[str, Any]:
+        result = await self.fetch_from_fibery(
+            "/api/commands",
+            method="POST",
+            json_data=[
+                {
+                    "command": command,
+                    "args": args,
+                },
+            ],
+        )
+
+        result = result["data"][0]
+        return result
+
