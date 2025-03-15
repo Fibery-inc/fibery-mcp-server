@@ -1,5 +1,6 @@
-import httpx
 from typing import Dict, Any
+
+import httpx
 
 
 class FiberyClient:
