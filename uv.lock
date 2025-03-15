@@ -69,8 +69,10 @@ name = "fibery-mcp-server"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "click" },
     { name = "httpx" },
     { name = "mcp", extra = ["cli"] },
+    { name = "pydantic" },
     { name = "python-dotenv" },
 ]
 
@@ -82,8 +84,10 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "click", specifier = ">=8.1.8" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "mcp", extras = ["cli"], specifier = ">=1.4.1" },
+    { name = "pydantic", specifier = ">=2.10.6" },
     { name = "python-dotenv", specifier = ">=1.0.1" },
 ]
 
