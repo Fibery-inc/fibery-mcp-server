@@ -19,12 +19,12 @@ async def serve(fibery_host: str, fibery_api_token: str) -> Server:
     fibery_client = FiberyClient(fibery_host, fibery_api_token)
 
     @server.list_tools()
-    async def list_tools() -> List[mcp.types.Resource]:
+    async def list_tools() -> List[mcp.types.Tool]:
         return handle_list_tools()
 
     @server.call_tool()
     async def call_tool(name: str, arguments: Dict[str, Any]) -> List[mcp.types.TextContent]:
-        logger.info(f'Requested resource with uri: {name}')
+        logger.info(f'Requested tool with uri: {name}')
         try:
             return await handle_tool_call(fibery_client, name, arguments)
         except Exception as e:
