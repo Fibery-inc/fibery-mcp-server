@@ -1,0 +1,69 @@
+Run any Fibery API command. This gives tremendous flexibility, but requires a bit of experience with the low-level Fibery API. In case query succeeded, return value contains a list of records with fields you specified in select. If request failed, will return detailed error message.
+Examples (note, that these databases are non-existent, use databases only from user's schema!):
+Query: What newly created Features do we have for the past 2 months?
+Tool use:
+{
+    "q_from": "Dev/Feature",
+    "q_select": {
+        "Name": ["Dev/Name"],
+        "Public Id": ["fibery/public-id"],
+        "Creation Date": ["fibery/creation-date"]
+    },
+    "q_where": [">", ["fibery/creation-date"], "$twoMonthsAgo"],
+    "q_order_by": {"fibery/creation-date": "q/desc"},
+    "q_limit": 100,
+    "q_offset": 0,
+    "q_params": {
+        $twoMonthsAgo: "2025-01-16T00:00:00.000Z"
+    }
+}
+Query: What Admin Tasks for the past week are Approval or Done?
+Tool use:
+{
+    "q_from": "Administrative/Admin Task",
+    "q_select": {
+        "Name": ["Administrative/Name"],
+        "Public Id": ["fibery/public-id"],
+        "Creation Date": ["fibery/creation-date"],
+        "State": ["workflow/state", "enum/name"]
+    },
+    "q_where": [
+        "q/and", # satisfy time AND states condition
+            [">", ["fibery/creation-date"], "$oneWeekAgo"],
+            [
+                "q/or", # nested or, since entity can be in either of these states
+                    ["=", ["workflow/state", "enum/name"], "$state1"],
+                    ["=", ["workflow/state", "enum/name"], "$state2"]
+            ]
+    ],
+    "q_order_by": {"fibery/creation-date": "q/desc"},
+    "q_limit": 100,
+    "q_offset": 0,
+    "q_params": { # notice that parameters used in "where" are always passed in params!
+        $oneWeekAgo: "2025-03-07T00:00:00.000Z",
+        $state1: "Approval",
+        $state2: "Done"
+    }
+}
+Query: What Admin Tasks for the past week are Approval or Done?
+Tool use:
+{
+    "q_from": "Administrative/Admin Task",
+    "q_select": {
+        "State": ["workflow/state", "enum/name"],
+        "Public Id": ["fibery/public-id"],
+        "Creation Date": ["fibery/creation-date"],
+        "Modification Date": ["fibery/modification-date"],
+        "Deadline": ["Administrative/Deadline"],
+        "Group": ["Administrative/Group", "Administrative/name"],
+        "Name": ["Administrative/Name"],
+        "Priority": ["Administrative/Priority_Administrative/Admin Task", "enum/name"]
+    },
+    "q_where": ["!=", ["workflow/state", "workflow/Final"], "$stateType"], # Administrative/Admin Task is not "Finished" yet
+    "q_order_by": {"fibery/creation-date": "q/desc"},
+    "q_limit": 100,
+    "q_offset": 0,
+    "q_params: {
+        "$stateType": true
+    }
+}

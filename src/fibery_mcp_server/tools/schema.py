@@ -5,11 +5,14 @@ import mcp
 from fibery_mcp_server.fibery_client import FiberyClient, Schema, Database
 
 schema_tool_name = "list_databases"
-schema_tool = mcp.types.Tool(
-    name=schema_tool_name,
-    description="Get list of all databases (their names) in user's Fibery workspace (schema)",
-    inputSchema={"type": "object"},
-)
+
+
+def schema_tool() -> mcp.types.Tool:
+    return mcp.types.Tool(
+        name=schema_tool_name,
+        description="Get list of all databases (their names) in user's Fibery workspace (schema)",
+        inputSchema={"type": "object"},
+    )
 
 
 async def handle_schema(fibery_client: FiberyClient) -> List[mcp.types.TextContent]:

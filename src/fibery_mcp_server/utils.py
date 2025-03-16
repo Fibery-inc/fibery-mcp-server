@@ -23,7 +23,7 @@ def get_ref(schema: Schema, field: Field) -> Database | None:
 
 
 def map_enum_values(enum_values: List[Dict[str, Any]]) -> str:
-    return ", ".join([value["Name"] for value in enum_values])
+    return ", ".join([f'"{value["Name"]}"' for value in enum_values])
 
 
 async def process_fields(
@@ -48,6 +48,8 @@ async def process_fields(
         if database.is_enum() and field.is_title():
             enum_values_response = await fibery_client.get_enum_values(database.name)
             type_str += f" # available values: {map_enum_values(enum_values_response.result)}"
+        if database.name.split("/")[0] == "workflow" and field.title == "Type":
+            type_str += ' # available values: "Not started", "Started", "Finished"'
         if ref_database:
             type_str = field_type if not field.is_collection() else f"Collection({field_type})"
             if (

@@ -6,19 +6,22 @@ from fibery_mcp_server.fibery_client import FiberyClient, Schema, Database, Fiel
 from fibery_mcp_server.utils import process_fields, PrettyField
 
 database_tool_name = "describe_database"
-database_tool = mcp.types.Tool(
-    name=database_tool_name,
-    description="Get list of all fields (in format of 'Title [name]: type') in the selected Fibery database and for all related databases.",
-    inputSchema={
-        "type": "object",
-        "properties": {
-            "database_name": {
-                "type": "string",
-                "description": "Database name as defined in Fibery schema",
-            }
+
+
+def database_tool() -> mcp.types.Tool:
+    return mcp.types.Tool(
+        name=database_tool_name,
+        description="Get list of all fields (in format of 'Title [name]: type') in the selected Fibery database and for all related databases.",
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "database_name": {
+                    "type": "string",
+                    "description": "Database name as defined in Fibery schema",
+                }
+            },
         },
-    },
-)
+    )
 
 
 def describe_database(database: str, fields: List[PrettyField]) -> str:

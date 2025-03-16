@@ -10,7 +10,7 @@ from fibery_mcp_server.tools.current_date import current_date_tool_name, current
 
 
 def handle_list_tools():
-    return [schema_tool, database_tool, query_tool, current_date_tool]
+    return [schema_tool, database_tool, query_tool(), current_date_tool]
 
 
 async def handle_tool_call(fibery_client: FiberyClient, name: str, arguments: Dict[str, Any]):

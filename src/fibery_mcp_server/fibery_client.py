@@ -86,7 +86,7 @@ class Schema:
         return databases
 
     @property
-    def databases(self):
+    def databases(self) -> List[Database]:
         return self.__databases
 
 
