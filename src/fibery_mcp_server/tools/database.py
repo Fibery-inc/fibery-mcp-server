@@ -8,7 +8,7 @@ from fibery_mcp_server.utils import get_database_by_name, process_fields
 database_tool_name = "describe_database"
 database_tool = mcp.types.Tool(
     name=database_tool_name,
-    description="Get list of all fields (in format of 'Title [name]: type') in the selected Fibery database",
+    description="Get list of all fields (in format of 'Title [name]: type') in the selected Fibery database and for all related databases.",
     inputSchema={
         "type": "object",
         "properties": {
