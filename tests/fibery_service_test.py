@@ -24,7 +24,4 @@ async def test_get_schema() -> None:
     schema = await fibery_client.get_schema()
 
     assert schema is not None, "No schema returned"
-    assert "fibery/types" in schema, "Schema does not contain 'types' field"
-    assert len(schema["fibery/types"]) > 0, "Schema contains no types"
-
-    print(f"\nSchema contains {len(schema['fibery/types'])} types")
+    assert len(schema.databases) > 0, "Schema does not contain 'types' field"

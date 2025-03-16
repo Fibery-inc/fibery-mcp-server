@@ -85,6 +85,10 @@ class Schema:
             databases.append(database)
         return databases
 
+    @property
+    def databases(self):
+        return self.__databases
+
 
 @dataclass
 class CommandResponse:
