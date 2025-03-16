@@ -21,6 +21,13 @@ database_tool = mcp.types.Tool(
 )
 
 
+def describe_database(database, fields):
+    content = f"Database {database}:\n"
+    for field in fields:
+        content += f"    {field['title']} [{field['name']}]: {field['type']}\n"
+    return content + "\n"
+
+
 async def handle_database(fibery_client: FiberyClient, arguments: Dict[str, Any]) -> List[mcp.types.TextContent]:
     schema = await fibery_client.get_schema()
 
@@ -39,10 +46,10 @@ async def handle_database(fibery_client: FiberyClient, arguments: Dict[str, Any]
     if not db_fields:
         return [mcp.types.TextContent(type="text", text=f"There are no fields found in this Fibery database.")]
 
-    prettified_fields = process_fields(schema["fibery/types"], db_fields)
+    prettified_fields, external_databases = process_fields(database, schema["fibery/types"], collect_external_databases=True)
+    external_prettified_databases = [(db["fibery/name"], process_fields(db, schema["fibery/types"])[0]) for db in external_databases]
 
-    content = f"Fields in {database_name}:\n\n"
-    for field in prettified_fields:
-        content += f"{field['title']} [{field['name']}]: {field['type']}\n"
-
+    content = ""
+    for db, fields in [(database["fibery/name"], prettified_fields)] + external_prettified_databases:
+        content += describe_database(db, fields)
     return [mcp.types.TextContent(type="text", text=content)]
