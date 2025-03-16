@@ -7,7 +7,55 @@ from fibery_mcp_server.fibery_client import FiberyClient
 query_tool_name = "query_database"
 query_tool = mcp.types.Tool(
     name=query_tool_name,
-    description="Run any Fibery API command. This gives tremendous flexibility, but requires a bit of experience with the low-level Fibery API. In case query succeeded, return value contains a list of records with fields you specified in select. If request failed, will return detailed error message.",
+    description="\n".join([
+        "Run any Fibery API command. This gives tremendous flexibility, but requires a bit of experience with the low-level Fibery API. In case query succeeded, return value contains a list of records with fields you specified in select. If request failed, will return detailed error message.",
+        "Examples (note, that these databases are non-existent, use databases only from user's schema!):"
+        "Query: What newly created Features do we have for the past 2 months?"
+        "Tool use:"
+        """{
+        "q_from": "Dev/Feature",
+        "q_select": {
+            "Name": ["Dev/Name"],
+            "Public Id": ["fibery/public-id"],
+            "Creation Date": ["fibery/creation-date"],
+        },
+        "q_where": [">", ["fibery/creation-date"], "$twoMonthsAgo"],
+        "q_order_by": {"fibery/creation-date": "q/desc"},
+        "q_limit": 100,
+        "q_offset": 0,
+        "q_params": {
+            $twoMonthsAgo: "2025-01-16T00.00.00Z",
+        },
+        }"""
+        "Task: What Admin Tasks for the past week are Approval or Done?",
+        "Tool use:",
+        """{
+        "q_from": "Administrative/Admin Task",
+        "q_select": {
+            "Name": ["Administrative/Name"],
+            "Public Id": ["fibery/public-id"],
+            "Creation Date": ["fibery/creation-date"],
+            "State": ["workflow/state", "enum/name"],
+        },
+        "q_where": [
+            "q/and", // satisfy time AND states condition
+                [">", ["fibery/creation-date"], "$oneWeekAgo"],
+                [
+                    "q/or", // nested or, since entity can be in either of these states
+                        ["=", ["workflow/state", "enum/name"], "$state1"],
+                        ["=", ["workflow/state", "enum/name"], "$state2"],
+                ],
+        ],
+        "q_order_by": {"fibery/creation-date": "q/desc"},
+        "q_limit": 100,
+        "q_offset": 0,
+        "q_params": { # notice that parameters used in "where" are always passed in params!
+            $oneWeekAgo: "2025-03-07T00.00.00Z",
+            $state1: "Approval",
+            $state2: "Done",
+        },
+    }""",
+    ]),
     inputSchema={
         "type": "object",
         "properties": {
@@ -38,9 +86,9 @@ query_tool = mcp.types.Tool(
                     ]
                 ),
             },
-            "q_orderby": {
+            "q_order_by": {
                 "type": "object",
-                "description": 'List of sorting criteria in format [[["field1"], "q/asc"], [["field2"], "q/desc"]]',
+                "description": 'List of sorting criteria in format {"field1": "q/asc", "field2": "q/desc"}',
             },
             "q_limit": {
                 "type": "int",
@@ -60,6 +108,12 @@ query_tool = mcp.types.Tool(
 )
 
 
+def parse_q_order_by(q_order_by: Dict[str, str]):
+    if not q_order_by:
+        return None
+    return [[[field], q_order] for field, q_order in q_order_by.items()]
+
+
 async def handle_query(fibery_client: FiberyClient, arguments: Dict[str, Any]) -> List[mcp.types.TextContent]:
     base = {
         "q/from": arguments["q_from"],
@@ -70,7 +124,7 @@ async def handle_query(fibery_client: FiberyClient, arguments: Dict[str, Any]) -
         k: v
         for k, v in {
             "q/where": arguments.get("q_where", None),
-            "q/order-by": arguments.get("q_order_by", None),
+            "q/order-by": parse_q_order_by(arguments.get("q_order_by", None)),
             "q/offset": arguments.get("q_offset", None),
         }.items()
         if v is not None
@@ -78,6 +132,6 @@ async def handle_query(fibery_client: FiberyClient, arguments: Dict[str, Any]) -
     query = base | optional
 
     commandResult = await fibery_client.execute_command(
-        "fibery.entity/query", {"query": query, "params": arguments.get("params", None)}
+        "fibery.entity/query", {"query": query, "params": arguments.get("q_params", None)}
     )
     return [mcp.types.TextContent(type="text", text=str(commandResult))]
