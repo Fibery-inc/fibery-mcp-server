@@ -3,7 +3,7 @@ from typing import List, Dict, Any
 import mcp
 
 from fibery_mcp_server.fibery_client import FiberyClient, Schema, Database, Field
-from fibery_mcp_server.utils import process_fields
+from fibery_mcp_server.utils import process_fields, PrettyField
 
 database_tool_name = "describe_database"
 database_tool = mcp.types.Tool(
@@ -14,17 +14,17 @@ database_tool = mcp.types.Tool(
         "properties": {
             "database_name": {
                 "type": "string",
-                "description": "Database name as defined in Fibery schema"
+                "description": "Database name as defined in Fibery schema",
             }
-        }
+        },
     },
 )
 
 
-def describe_database(database, fields):
+def describe_database(database: str, fields: List[PrettyField]) -> str:
     content = f"Database {database}:\n"
     for field in fields:
-        content += f"    {field['title']} [{field['name']}]: {field['type']}\n"
+        content += f"    {field.title} [{field.name}]: {field.type}\n"
     return content + "\n"
 
 
@@ -38,7 +38,6 @@ async def handle_database(fibery_client: FiberyClient, arguments: Dict[str, Any]
     database: Database | None = schema.databases_by_name().get(database_name, None)
     if not database:
         return [mcp.types.TextContent(type="text", text=f"Error: database {database_name} was not found.")]
-
 
     db_fields: List[Field] = database.fields
 

@@ -24,7 +24,7 @@ async def serve(fibery_host: str, fibery_api_token: str) -> Server:
 
     @server.call_tool()
     async def call_tool(name: str, arguments: Dict[str, Any]) -> List[mcp.types.TextContent]:
-        logger.info(f'Requested tool with uri: {name}')
+        logger.info(f"Requested tool with uri: {name}")
         try:
             return await handle_tool_call(fibery_client, name, arguments)
         except Exception as e:
@@ -47,8 +47,8 @@ async def serve(fibery_host: str, fibery_api_token: str) -> Server:
     required=True,
     help="Fibery API Token",
 )
-def main(fibery_host: str, fibery_api_token: str):
-    async def _run():
+def main(fibery_host: str, fibery_api_token: str) -> None:
+    async def _run() -> None:
         async with mcp.stdio_server() as (read_stream, write_stream):
             server = await serve(fibery_host, fibery_api_token)
             await server.run(

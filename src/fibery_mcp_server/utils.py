@@ -1,6 +1,14 @@
-from typing import List
+from typing import List, Tuple
+from dataclasses import dataclass
 
 from .fibery_client import Schema, Database, Field
+
+
+@dataclass
+class PrettyField:
+    title: str
+    name: str
+    type: str
 
 
 def get_ref(schema: Schema, field: Field) -> Database | None:
@@ -14,7 +22,7 @@ def get_ref(schema: Schema, field: Field) -> Database | None:
     return ref_database
 
 
-def process_fields(schema: Schema, database: Database, collect_external_databases=False):
+def process_fields(schema: Schema, database: Database, collect_external_databases: bool = False) -> Tuple[List[PrettyField], List[Database]]:
     fields = database.fields
 
     pretty_fields = []
@@ -36,10 +44,10 @@ def process_fields(schema: Schema, database: Database, collect_external_database
         if ref_database:
             type_str = field_type if not field.is_collection() else f"Collection({field_type})"
             if (
-                    collect_external_databases and
-                    ref_database.name != database.name and
-                    ref_database.name not in map(lambda db: db.name, external_databases)
+                collect_external_databases
+                and ref_database.name != database.name
+                and ref_database.name not in map(lambda db: db.name, external_databases)
             ):
                 external_databases.append(ref_database)
-        pretty_fields.append({"title": title, "name": name, "type": type_str})
+        pretty_fields.append(PrettyField(title, name, type_str))
     return pretty_fields, external_databases
