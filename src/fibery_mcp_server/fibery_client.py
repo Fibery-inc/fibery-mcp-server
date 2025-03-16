@@ -1,6 +1,88 @@
-from typing import Dict, Any
+from typing import Dict, Any, List
 
 import httpx
+
+
+class Field:
+    def __init__(self, raw_field):
+        self.__raw_field = raw_field
+        self.__raw_meta = raw_field.get("fibery/meta", {})
+
+    def is_primitive(self):
+        return self.__raw_meta.get("fibery/primitive?", False)
+
+    def is_collection(self):
+        return self.__raw_meta.get("fibery/collection?", False)
+
+    def is_title(self):
+        return self.__raw_meta.get("ui/title?", False)
+
+    def is_hidden(self):
+        return self.__raw_meta.get("ui/hidden?", False)
+
+    @property
+    def type(self):
+        return self.__raw_field["fibery/type"]
+
+    @property
+    def primitive_type(self):
+        return self.__raw_field["fibery/type"].split('/')[-1]
+
+    @property
+    def name(self):
+        return self.__raw_field["fibery/name"]
+
+    @property
+    def title(self):
+        return self.__raw_field["fibery/name"].split('/')[-1].title()
+
+
+class Database:
+    def __init__(self, raw_database):
+        self.__raw_database = raw_database
+        self.__raw_meta = raw_database.get("fibery/meta", {})
+        self.__fields: List[Field] = [Field(raw_field) for raw_field in raw_database["fibery/fields"]]
+
+    def is_primitive(self):
+        return self.__raw_meta.get("fibery/primitive?", False)
+
+    def is_enum(self):
+        return self.__raw_meta.get("fibery/enum?", False)
+
+    def include_database(self) -> bool:
+        return not (
+                self.name.startswith("fibery/") or
+                self.name.startswith('Collaboration~Documents') or
+                self.name.endswith('-mixin') or
+                self.name == "workflow/workflow"
+        )
+
+    @property
+    def name(self):
+        return self.__raw_database["fibery/name"]
+
+    @property
+    def fields(self):
+        return self.__fields
+
+
+class Schema:
+    def __init__(self, raw_schema):
+        self.__raw_schema = raw_schema
+        self.__databases: List[Database] = [Database(raw_db) for raw_db in raw_schema["fibery/types"]]
+
+    def databases_by_name(self) -> Dict[str, Database]:
+        return {db.name: db for db in self.__databases}
+
+    def include_databases_from_schema(self) -> List[Database]:
+        if not self.__databases:
+            return []
+
+        databases = []
+
+        for database in filter(lambda db: db.include_database(), self.__databases):
+            databases.append(database)
+        return databases
 
 
 class FiberyClient:
@@ -55,7 +137,7 @@ class FiberyClient:
             }
 
 
-    async def get_schema(self) -> Dict[str, Any]:
+    async def get_schema(self) -> Schema:
         """
         Returns:
             Processed Fibery schema
@@ -67,7 +149,7 @@ class FiberyClient:
         )
 
         schema_data = result["data"]
-        return schema_data
+        return Schema(schema_data)
 
     async def execute_command(self, command: str, args: Dict[str, Any]) -> Dict[str, Any]:
         result = await self.fetch_from_fibery(

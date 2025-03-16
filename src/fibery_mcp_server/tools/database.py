@@ -2,8 +2,8 @@ from typing import List, Dict, Any
 
 import mcp
 
-from fibery_mcp_server.fibery_client import FiberyClient
-from fibery_mcp_server.utils import get_database_by_name, process_fields
+from fibery_mcp_server.fibery_client import FiberyClient, Schema, Database, Field
+from fibery_mcp_server.utils import process_fields
 
 database_tool_name = "describe_database"
 database_tool = mcp.types.Tool(
@@ -29,27 +29,26 @@ def describe_database(database, fields):
 
 
 async def handle_database(fibery_client: FiberyClient, arguments: Dict[str, Any]) -> List[mcp.types.TextContent]:
-    schema = await fibery_client.get_schema()
+    schema: Schema = await fibery_client.get_schema()
 
-    database_name = arguments.get("database_name")
+    database_name: str = arguments.get("database_name")
     if not database_name:
         return [mcp.types.TextContent(type="text", text=f"Error: database_name is not provided.")]
 
-    database = get_database_by_name(schema["fibery/types"], database_name)
+    database: Database | None = schema.databases_by_name().get(database_name, None)
     if not database:
         return [mcp.types.TextContent(type="text", text=f"Error: database {database_name} was not found.")]
 
 
-    db_fields = database["fibery/fields"]
+    db_fields: List[Field] = database.fields
 
-    # Format the output nicely
     if not db_fields:
         return [mcp.types.TextContent(type="text", text=f"There are no fields found in this Fibery database.")]
 
-    prettified_fields, external_databases = process_fields(database, schema["fibery/types"], collect_external_databases=True)
-    external_prettified_databases = [(db["fibery/name"], process_fields(db, schema["fibery/types"])[0]) for db in external_databases]
+    prettified_fields, external_databases = process_fields(schema, database, collect_external_databases=True)
+    external_prettified_databases = [(db.name, process_fields(schema, db)[0]) for db in external_databases]
 
     content = ""
-    for db, fields in [(database["fibery/name"], prettified_fields)] + external_prettified_databases:
+    for db, fields in [(database.name, prettified_fields)] + external_prettified_databases:
         content += describe_database(db, fields)
     return [mcp.types.TextContent(type="text", text=content)]
