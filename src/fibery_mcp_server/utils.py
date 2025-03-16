@@ -1,7 +1,7 @@
-from typing import List, Tuple
+from typing import List, Tuple, Dict, Any
 from dataclasses import dataclass
 
-from .fibery_client import Schema, Database, Field
+from .fibery_client import FiberyClient, Schema, Database, Field
 
 
 @dataclass
@@ -22,7 +22,13 @@ def get_ref(schema: Schema, field: Field) -> Database | None:
     return ref_database
 
 
-def process_fields(schema: Schema, database: Database, collect_external_databases: bool = False) -> Tuple[List[PrettyField], List[Database]]:
+def map_enum_values(enum_values: List[Dict[str, Any]]) -> str:
+    return ", ".join([value["Name"] for value in enum_values])
+
+
+async def process_fields(
+    fibery_client: FiberyClient, schema: Schema, database: Database, collect_external_databases: bool = False
+) -> Tuple[List[PrettyField], List[Database]]:
     fields = database.fields
 
     pretty_fields = []
@@ -40,7 +46,8 @@ def process_fields(schema: Schema, database: Database, collect_external_database
         if field_type == "fibery/rank":
             _type = "int"
         if database.is_enum() and field.is_title():
-            type_str += " ENUM"
+            enum_values_response = await fibery_client.get_enum_values(database.name)
+            type_str += f" # available values: {map_enum_values(enum_values_response.result)}"
         if ref_database:
             type_str = field_type if not field.is_collection() else f"Collection({field_type})"
             if (

@@ -1,4 +1,5 @@
 from typing import Dict, Any, List
+from dataclasses import dataclass
 
 import httpx
 
@@ -85,6 +86,12 @@ class Schema:
         return databases
 
 
+@dataclass
+class CommandResponse:
+    success: bool
+    result: List[Dict[str, Any]]
+
+
 class FiberyClient:
     def __init__(self, fibery_host: str, fibery_api_token: str):
         if not fibery_host:
@@ -150,7 +157,7 @@ class FiberyClient:
         schema_data = result["data"]
         return Schema(schema_data)
 
-    async def execute_command(self, command: str, args: Dict[str, Any]) -> Dict[str, Any]:
+    async def execute_command(self, command: str, args: Dict[str, Any]) -> CommandResponse:
         result = await self.fetch_from_fibery(
             "/api/commands",
             method="POST",
@@ -163,4 +170,26 @@ class FiberyClient:
         )
 
         result = result["data"][0]
-        return result
+        return CommandResponse(result["success"], result["result"])
+
+    async def get_enum_values(self, database_name: str) -> CommandResponse:
+        result = await self.fetch_from_fibery(
+            "/api/commands",
+            method="POST",
+            json_data=[
+                {
+                    "command": "fibery.entity/query",
+                    "args": {
+                        "query": {
+                            "q/from": database_name,
+                            "q/select": {"Id": ["fibery/id"], "Name": ["enum/name"]},
+                            "q/limit": 100,
+                        },
+                        "params": {},
+                    },
+                },
+            ],
+        )
+
+        result = result["data"][0]
+        return CommandResponse(result["success"], result["result"])

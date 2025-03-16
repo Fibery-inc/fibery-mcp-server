@@ -44,8 +44,8 @@ async def handle_database(fibery_client: FiberyClient, arguments: Dict[str, Any]
     if not db_fields:
         return [mcp.types.TextContent(type="text", text=f"There are no fields found in this Fibery database.")]
 
-    prettified_fields, external_databases = process_fields(schema, database, collect_external_databases=True)
-    external_prettified_databases = [(db.name, process_fields(schema, db)[0]) for db in external_databases]
+    prettified_fields, external_databases = await process_fields(fibery_client, schema, database, collect_external_databases=True)
+    external_prettified_databases = [(db.name, (await process_fields(fibery_client, schema, db))[0]) for db in external_databases]
 
     content = ""
     for db, fields in [(database.name, prettified_fields)] + external_prettified_databases:
