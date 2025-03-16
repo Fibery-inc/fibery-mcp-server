@@ -1,9 +1,10 @@
 import os
-from typing import Dict, Any, List
+from copy import deepcopy
+from typing import Dict, Any, List, Tuple
 
 import mcp
 
-from fibery_mcp_server.fibery_client import FiberyClient
+from fibery_mcp_server.fibery_client import FiberyClient, Schema, Database
 
 query_tool_name = "query_database"
 
@@ -67,16 +68,35 @@ def query_tool() -> mcp.types.Tool:
     )
 
 
-def parse_q_order_by(q_order_by: Dict[str, str]) -> List[List[List[str], str]] | None:
+def parse_q_order_by(q_order_by: Dict[str, str]) -> List[Tuple[List[str], str]] | None:
     if not q_order_by:
         return None
-    return [[[field], q_order] for field, q_order in q_order_by.items()]
+    return [([field], q_order) for field, q_order in q_order_by.items()]
+
+
+def get_rich_text_fields(q_select: Dict[str, Any], database: Database) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
+    rich_text_fields = []
+    safe_q_select = deepcopy(q_select)
+    for field_alias, field_name in safe_q_select.items():
+        if not isinstance(field_name, str):
+            if isinstance(field_name, list):
+                field_name = field_name[0]
+        if database.fields_by_name().get(field_name, None).is_rich_text():
+            rich_text_fields.append({"alias": field_alias, "name": field_name})
+            safe_q_select[field_alias] = [field_name, "Collaboration~Documents/secret"]
+    return rich_text_fields, safe_q_select
 
 
 async def handle_query(fibery_client: FiberyClient, arguments: Dict[str, Any]) -> List[mcp.types.TextContent]:
+    q_from, q_select = arguments["q_from"], arguments["q_select"]
+
+    schema: Schema = await fibery_client.get_schema()
+    database = schema.databases_by_name()[arguments["q_from"]]
+    rich_text_fields, safe_q_select = get_rich_text_fields(q_select, database)
+
     base = {
-        "q/from": arguments["q_from"],
-        "q/select": arguments["q_select"],
+        "q/from": q_from,
+        "q/select": safe_q_select,
         "q/limit": arguments.get("q_limit", 50),
     }
     optional = {
@@ -93,4 +113,18 @@ async def handle_query(fibery_client: FiberyClient, arguments: Dict[str, Any]) -
     commandResult = await fibery_client.execute_command(
         "fibery.entity/query", {"query": query, "params": arguments.get("q_params", None)}
     )
+
+    if not commandResult.success:
+        return [mcp.types.TextContent(type="text", text=str(commandResult))]
+
+    for i, entity in enumerate(commandResult.result):
+        for field in rich_text_fields:
+            secret = entity.get(field["alias"], None)
+            if not secret:
+                return [
+                    mcp.types.TextContent(
+                        type="text", text=f"Unable to get document content for entity {entity}. Field: {field}"
+                    )
+                ]
+            entity[field["alias"]] = await fibery_client.get_document_content(secret)
     return [mcp.types.TextContent(type="text", text=str(commandResult))]

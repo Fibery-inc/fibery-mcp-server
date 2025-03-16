@@ -21,6 +21,9 @@ class Field:
     def is_hidden(self) -> bool:
         return self.__raw_meta.get("ui/hidden?", False)
 
+    def is_rich_text(self) -> bool:
+        return self.__raw_field.get("fibery/type", None) == "Collaboration~Documents/Document"
+
     @property
     def type(self) -> str:
         return self.__raw_field["fibery/type"]
@@ -58,6 +61,9 @@ class Database:
             or self.name == "workflow/workflow"
         )
 
+    def fields_by_name(self) -> Dict[str, Field]:
+        return {field.name: field for field in self.__fields}
+
     @property
     def name(self) -> str:
         return self.__raw_database["fibery/name"]
@@ -94,6 +100,12 @@ class Schema:
 class CommandResponse:
     success: bool
     result: List[Dict[str, Any]]
+
+
+@dataclass
+class GetDocumentResponse:
+    secret: str
+    content: str
 
 
 class FiberyClient:
@@ -197,3 +209,11 @@ class FiberyClient:
 
         result = result["data"][0]
         return CommandResponse(result["success"], result["result"])
+
+    async def get_document_content(self, secret: str) -> str:
+        result = await self.fetch_from_fibery(
+            f"api/documents/{secret}?format=md",
+            method="GET",
+        )
+        result = result["data"]
+        return GetDocumentResponse(result["secret"], result["content"]).content

@@ -44,13 +44,15 @@ async def process_fields(
         ref_database = get_ref(schema, field)
         type_str = field.primitive_type if field.is_primitive() else field_type
         if field_type == "fibery/rank":
-            _type = "int"
+            type_str = "int"
+        if field.is_rich_text():
+            type_str = "fibery/document"
         if database.is_enum() and field.is_title():
             enum_values_response = await fibery_client.get_enum_values(database.name)
             type_str += f" # available values: {map_enum_values(enum_values_response.result)}"
         if database.name.split("/")[0] == "workflow" and field.title == "Type":
             type_str += ' # available values: "Not started", "Started", "Finished"'
-        if ref_database:
+        if ref_database and not field.is_rich_text():
             type_str = field_type if not field.is_collection() else f"Collection({field_type})"
             if (
                 collect_external_databases

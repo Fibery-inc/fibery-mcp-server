@@ -17,6 +17,7 @@ Tool use:
         $twoMonthsAgo: "2025-01-16T00:00:00.000Z"
     }
 }
+
 Query: What Admin Tasks for the past week are Approval or Done?
 Tool use:
 {
@@ -45,6 +46,7 @@ Tool use:
         $state2: "Done"
     }
 }
+
 Query: What Admin Tasks for the past week are Approval or Done?
 Tool use:
 {
@@ -65,5 +67,22 @@ Tool use:
     "q_offset": 0,
     "q_params: {
         "$stateType": true
+    }
+}
+
+Query: Summarize acc contacts with public id 1.
+Tool use:
+{
+    "q_from": "Accounting/Acc Contacts",
+    "q_select": {
+        "Name": ["Accounting/Name"],
+        "Public Id": ["fibery/public-id"],
+        "Creation Date": ["fibery/creation-date"],
+        "Description": ["Accounting/Description"]
+    },
+    "q_where": ["=", ["fibery/public-id"], "$publicId"],
+    "q_limit": 1,
+    "q_params": {
+        $publicId: "1",
     }
 }
