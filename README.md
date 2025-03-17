@@ -1,40 +1,27 @@
 # Fibery MCP Server
 
-This MCP (Model Context Protocol) server provides integration between Fibery and any LLM provider support MCP protocol (i.e., Claude for Desktop), allowing you to interact with your Fibery workspace using natural language.
+This MCP (Model Context Protocol) server provides integration between Fibery and any LLM provider supporting the MCP protocol (e.g., Claude for Desktop), allowing you to interact with your Fibery workspace using natural language.
 
 ## Features
 - Query Fibery entities using natural language
 - Get information about your Fibery databases and their fields
+- Create and update Fibery entities through conversational interfaces
 
 ## Installation
 
 ### Prerequisites
 
-- Python 3.10 or higher
-- [uv](https://github.com/astral-sh/uv) package manager
 - A Fibery account with an API token
+- Python 3.10 or higher
+- [uv](https://github.com/astral-sh/uv)
 
-### Setup
+### Installation with uv
 
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/Fibery-inc/fibery-mcp-server.git
-   cd fibery-mcp-server
-   ```
+```bash
+uv tool install fibery-mcp-server
+```
 
-2. Set up the virtual environment:
-   ```bash
-   uv init
-   uv venv
-   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-   ```
-
-3. Install dependencies:
-   ```bash
-   uv sync
-   ```
-   
-### 🔌 MCP Integration
+## 🔌 MCP Integration
 
 Add this configuration to your MCP client config file:
 
@@ -42,23 +29,44 @@ Add this configuration to your MCP client config file:
 {
     "mcpServers": {
         "fibery-mcp-server": {
-            "command": "/Users/max/.local/bin/uv",
+            "command": "uv", // if "uv" does not work, try absolute path (i.e. /Users/username/.local/bin/uv)
             "args": [
-                "--directory",
-                "path/to/your/fibery-mcp-server",
-                "run",
-                "fibery-mcp-server",
-                "--fibery-host",
-                "your-domain.fibery.io",
-                "--fibery-api-token",
-                "your-api-token"
+                 "tool",
+                 "run",
+                 "fibery-mcp-server",
+                 "--fibery-host",
+                 "your-domain.fibery.io",
+                 "--fibery-api-token",
+                 "your-api-token"
             ]
         }
     }
 }
 ```
 
-### Available Tools
+For Development:
+
+```json
+{
+    "mcpServers": {
+        "arxiv-mcp-server": {
+            "command": "uv", // if "uv" does not work, try absolute path (i.e. /Users/username/.local/bin/uv)
+            "args": [
+                "--directory",
+                "path/to/cloned/fibery-mcp-server",
+                "run",
+                "fibery-mcp-server",
+                "--fibery-host",
+                 "your-domain.fibery.io",
+                 "--fibery-api-token",
+                 "your-api-token"
+            ]
+        }
+    }
+}
+```
+
+## Available Tools
 
 #### 1. List Databases (`list_databases`)
 
