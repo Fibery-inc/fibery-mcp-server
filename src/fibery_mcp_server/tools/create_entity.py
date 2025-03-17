@@ -91,5 +91,7 @@ async def handle_create_entity(fibery_client: FiberyClient, arguments: Dict[str,
         doc_result = await fibery_client.create_document(secret, field["value"])
         if not doc_result.success:
             return [mcp.types.TextContent(type="text", text=str(doc_result))]
-        
-    return [mcp.types.TextContent(type="text", text=str(creation_result))]
+
+    public_id = creation_result.result["fibery/public-id"]
+    url = fibery_client.compose_url(database_name.split('/')[0], database_name.split('/')[1], public_id)
+    return [mcp.types.TextContent(type="text", text=str(f'Entity created successfully. URL: {url}'))]

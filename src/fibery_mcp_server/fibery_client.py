@@ -113,8 +113,12 @@ class CreateDocumentResponse:
     message: str
 
 
+def normalize_str(s: str) -> str:
+    return s.replace(" ", "_").replace("-", "_")
+
+
 class FiberyClient:
-    def __init__(self, fibery_host: str, fibery_api_token: str):
+    def __init__(self, fibery_host: str, fibery_api_token: str, fibery_https: bool = True):
         if not fibery_host:
             raise ValueError("Fibery host not provided. Set FIBERY_HOST environment variable.")
 
@@ -123,6 +127,7 @@ class FiberyClient:
 
         self.__fibery_host: str = fibery_host
         self.__fibery_api_token: str = fibery_api_token
+        self.__fibery_https: bool = fibery_https
 
     async def fetch_from_fibery(
         self,
@@ -256,3 +261,6 @@ class FiberyClient:
                 },
             },
         )
+
+    def compose_url(self, space:str, database: str, public_id: str) -> str:
+        return f"{'https' if self.__fibery_https else 'http'}://{self.__fibery_host}/{normalize_str(space)}/{normalize_str(database)}/{public_id}"

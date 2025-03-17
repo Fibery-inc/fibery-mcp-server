@@ -10,3 +10,4 @@ Tool use:
         "workflow/state": "To Do"
     }
 }
+In case of successful execution, you will get a link to created entity. Make sure to give that link to the user.
