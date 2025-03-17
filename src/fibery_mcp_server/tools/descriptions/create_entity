@@ -5,6 +5,8 @@ Tool use:
 {
     "database": "Product Management/Feature",
     "entity": {
-        "Product Management/Name": "New Feature"
+        "Product Management/Name": "New Feature",
+        "Product Management/Description": "Description of the new feature",
+        "workflow/state": "To Do"
     }
 }
