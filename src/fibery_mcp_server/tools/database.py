@@ -20,6 +20,7 @@ def database_tool() -> mcp.types.Tool:
                     "description": "Database name as defined in Fibery schema",
                 }
             },
+            "required": ["database_name"],
         },
     )
 
