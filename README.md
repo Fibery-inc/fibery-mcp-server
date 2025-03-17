@@ -19,7 +19,7 @@ This MCP (Model Context Protocol) server provides integration between Fibery and
 uv tool install fibery-mcp-server
 ```
 
-🔌 MCP Integration
+## 🔌 MCP Integration
 Add this configuration to your MCP client config file. 
 
 In Claude Desktop, you can access the config in **Settings → Developer → Edit Config**:
