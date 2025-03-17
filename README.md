@@ -19,10 +19,10 @@ This MCP (Model Context Protocol) server provides integration between Fibery and
 uv tool install fibery-mcp-server
 ```
 
-## 🔌 MCP Integration
+🔌 MCP Integration
+Add this configuration to your MCP client config file. 
 
-Add this configuration to your MCP client config file <i>(if "uv" command does not work, try absolute path (i.e. /Users/username/.local/bin/uv)</i>:
-
+In Claude Desktop, you can access the config in **Settings → Developer → Edit Config**:
 ```json
 {
     "mcpServers": {
@@ -41,8 +41,9 @@ Add this configuration to your MCP client config file <i>(if "uv" command does n
     }
 }
 ```
+Note: If "uv" command does not work, try absolute path (i.e. /Users/username/.local/bin/uv
 
-For Development:
+**For Development:**
 
 ```json
 {
