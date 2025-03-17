@@ -71,3 +71,11 @@ Provides a detailed breakdown of a specific database's structure, showing all fi
 #### 3. Query Database (`query_database`)
 
 Offers powerful, flexible access to your Fibery data through the Fibery API.
+
+#### 4. Create Entity (`create_entity`)
+
+Creates new entities in your Fibery workspace with specified field values.
+
+#### 5. Update Entity (`update_entity`) 
+
+Updates existing entities in your Fibery workspace with new field values.
