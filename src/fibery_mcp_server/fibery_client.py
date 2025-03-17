@@ -107,6 +107,7 @@ class GetDocumentResponse:
     secret: str
     content: str
 
+
 @dataclass
 class CreateDocumentResponse:
     success: bool
@@ -231,20 +232,34 @@ class FiberyClient:
         result = result["data"]
         return GetDocumentResponse(result["secret"], result["content"]).content
 
-    async def create_document(self, secret: str, content: str) -> CreateDocumentResponse:
-        result = await self.fetch_from_fibery("/api/documents/commands", "POST", {
-            "command": "create-or-update-documents",
-            "args": [{"secret": secret, "content": content}]
-        })
+    async def create_or_update_document(
+        self, secret: str, content: str, append: bool = False
+    ) -> CreateDocumentResponse:
+        result = await self.fetch_from_fibery(
+            "/api/documents/commands",
+            "POST",
+            {
+                "command": "create-or-update-documents" if not append else "create-or-append-documents",
+                "args": [{"secret": secret, "content": content}],
+            },
+        )
         result_parsed: bool | Dict[str, Any] = result["data"]
         if result_parsed is True:
-            return CreateDocumentResponse(True, "Document created successfully")
-        return CreateDocumentResponse(False, result_parsed.get("message", "Failed to create document."))
-
+            return CreateDocumentResponse(True, "Document created/updated successfully")
+        return CreateDocumentResponse(False, result_parsed.get("message", "Failed to create/update document."))
 
     async def create_entity(self, database: str, entity: Dict[str, Any]) -> CommandResponse:
         return await self.execute_command(
             "fibery.entity/create",
+            {
+                "type": database,
+                "entity": entity,
+            },
+        )
+
+    async def update_entity(self, database: str, entity: Dict[str, Any]) -> CommandResponse:
+        return await self.execute_command(
+            "fibery.entity/update",
             {
                 "type": database,
                 "entity": entity,
@@ -262,5 +277,19 @@ class FiberyClient:
             },
         )
 
-    def compose_url(self, space:str, database: str, public_id: str) -> str:
+    async def get_public_id_by_id(self, database: str, fibery_id: str) -> str | None:
+        result = await self.query(
+            {
+                "q/from": database,
+                "q/select": {"Public Id": "fibery/public-id"},
+                "q/where": ["=", ["fibery/id"], "$id"],
+                "q/limit": 1,
+            },
+            {"$id": fibery_id},
+        )
+        if not result.success:
+            return None
+        return str(result.result[0]["Public Id"])
+
+    def compose_url(self, space: str, database: str, public_id: str) -> str:
         return f"{'https' if self.__fibery_https else 'http'}://{self.__fibery_host}/{normalize_str(space)}/{normalize_str(database)}/{public_id}"

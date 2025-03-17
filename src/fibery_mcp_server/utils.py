@@ -1,5 +1,5 @@
-from typing import List, Tuple, Dict, Any
 from dataclasses import dataclass
+from typing import List, Tuple, Dict, Any
 
 from .fibery_client import FiberyClient, Schema, Database, Field
 
@@ -26,7 +26,7 @@ def map_enum_values(enum_values: List[Dict[str, Any]]) -> str:
     return ", ".join([f'"{value["Name"]}"' for value in enum_values])
 
 
-async def process_fields(
+async def prettify_fields(
     fibery_client: FiberyClient, schema: Schema, database: Database, collect_external_databases: bool = False
 ) -> Tuple[List[PrettyField], List[Database]]:
     fields = database.fields
@@ -62,3 +62,17 @@ async def process_fields(
                 external_databases.append(ref_database)
         pretty_fields.append(PrettyField(title, name, type_str))
     return pretty_fields, external_databases
+
+
+def str_to_bool(value: str | bool) -> bool:
+    if isinstance(value, bool):
+        return value
+    value = value.lower()
+    true_values = ["true", "yes", "y", "1", "on"]
+    false_values = ["false", "no", "n", "0", "off"]
+    if value in true_values:
+        return True
+    elif value in false_values:
+        return False
+    else:
+        raise ValueError(f"Cannot convert '{value}' to boolean")

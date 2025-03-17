@@ -2,8 +2,8 @@ from typing import List, Dict, Any
 
 import mcp
 
+from fibery_mcp_server.utils import prettify_fields, PrettyField
 from fibery_mcp_server.fibery_client import FiberyClient, Schema, Database, Field
-from fibery_mcp_server.utils import process_fields, PrettyField
 
 database_tool_name = "describe_database"
 
@@ -48,11 +48,11 @@ async def handle_database(fibery_client: FiberyClient, arguments: Dict[str, Any]
     if not db_fields:
         return [mcp.types.TextContent(type="text", text="There are no fields found in this Fibery database.")]
 
-    prettified_fields, external_databases = await process_fields(
+    prettified_fields, external_databases = await prettify_fields(
         fibery_client, schema, database, collect_external_databases=True
     )
     external_prettified_databases = [
-        (db.name, (await process_fields(fibery_client, schema, db))[0]) for db in external_databases
+        (db.name, (await prettify_fields(fibery_client, schema, db))[0]) for db in external_databases
     ]
 
     content = ""

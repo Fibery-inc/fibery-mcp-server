@@ -1,0 +1,14 @@
+Update Fibery entity with specified fields.
+Examples (note, that these databases are non-existent, use databases only from user's schema!):
+Query: Update a feature we talked about
+Tool use:
+{
+    "database": "Product Management/Feature",
+    "entity": {
+        "fibery/id": "12345678-1234-5678-1234-567812345678",
+        "Product Management/Name": "New Feature 2",
+        "Product Management/Description": {"append": true, "content": "Notes: some notes"},
+        "workflow/state": "In Progress"
+    }
+}
+In case of successful execution, you will get a link to updated entity. Make sure to give that link to the user.
