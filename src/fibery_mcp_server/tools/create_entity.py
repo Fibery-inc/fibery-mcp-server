@@ -26,7 +26,7 @@ def create_entity_tool() -> mcp.types.Tool:
                 },
                 "entity": {
                     "type": "dict[str, str]",
-                    "description": 'Defines what fields to set in format {"FieldName": value} (i.e. {"Product Management/Name": "My new entity"}). Can include:',
+                    "description": 'Defines what fields to set in format {"FieldName": value} (i.e. {"Product Management/Name": "My new entity"}).',
                 },
             },
             "required": ["database", "entity"],
