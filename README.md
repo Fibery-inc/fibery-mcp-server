@@ -2,12 +2,12 @@
 
 This MCP (Model Context Protocol) server provides integration between Fibery and any LLM provider supporting the MCP protocol (e.g., Claude for Desktop), allowing you to interact with your Fibery workspace using natural language.
 
-## Features
+## ✨ Features
 - Query Fibery entities using natural language
 - Get information about your Fibery databases and their fields
 - Create and update Fibery entities through conversational interfaces
 
-## Installation
+## 📦 Installation
 
 ### Prerequisites
 
@@ -15,15 +15,13 @@ This MCP (Model Context Protocol) server provides integration between Fibery and
 - Python 3.10 or higher
 - [uv](https://github.com/astral-sh/uv)
 
-### Installation with uv
-
 ```bash
 uv tool install fibery-mcp-server
 ```
 
 ## 🔌 MCP Integration
 
-Add this configuration to your MCP client config file (if "uv" command does not work, try absolute path (i.e. /Users/username/.local/bin/uv):
+Add this configuration to your MCP client config file <i>(if "uv" command does not work, try absolute path (i.e. /Users/username/.local/bin/uv)</i>:
 
 ```json
 {
@@ -66,7 +64,7 @@ For Development:
 }
 ```
 
-## Available Tools
+## 🚀 Available Tools
 
 #### 1. List Databases (`list_databases`)
 
