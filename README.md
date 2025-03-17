@@ -23,13 +23,13 @@ uv tool install fibery-mcp-server
 
 ## 🔌 MCP Integration
 
-Add this configuration to your MCP client config file:
+Add this configuration to your MCP client config file (if "uv" command does not work, try absolute path (i.e. /Users/username/.local/bin/uv):
 
 ```json
 {
     "mcpServers": {
         "fibery-mcp-server": {
-            "command": "uv", // if "uv" does not work, try absolute path (i.e. /Users/username/.local/bin/uv)
+            "command": "uv",
             "args": [
                  "tool",
                  "run",
@@ -50,7 +50,7 @@ For Development:
 {
     "mcpServers": {
         "arxiv-mcp-server": {
-            "command": "uv", // if "uv" does not work, try absolute path (i.e. /Users/username/.local/bin/uv)
+            "command": "uv",
             "args": [
                 "--directory",
                 "path/to/cloned/fibery-mcp-server",
