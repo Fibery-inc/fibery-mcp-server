@@ -1,0 +1,10 @@
+Create Fibery entity with specified fields.
+Examples (note, that these databases are non-existent, use databases only from user's schema!):
+Query: Create a feature
+Tool use:
+{
+    "database": "Product Management/Feature",
+    "entity": {
+        "Product Management/Name": "New Feature"
+    }
+}

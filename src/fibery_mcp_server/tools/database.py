@@ -36,7 +36,7 @@ async def handle_database(fibery_client: FiberyClient, arguments: Dict[str, Any]
 
     database_name: str = arguments.get("database_name")
     if not database_name:
-        return [mcp.types.TextContent(type="text", text=f"Error: database_name is not provided.")]
+        return [mcp.types.TextContent(type="text", text="Error: database_name is not provided.")]
 
     database: Database | None = schema.databases_by_name().get(database_name, None)
     if not database:
@@ -45,7 +45,7 @@ async def handle_database(fibery_client: FiberyClient, arguments: Dict[str, Any]
     db_fields: List[Field] = database.fields
 
     if not db_fields:
-        return [mcp.types.TextContent(type="text", text=f"There are no fields found in this Fibery database.")]
+        return [mcp.types.TextContent(type="text", text="There are no fields found in this Fibery database.")]
 
     prettified_fields, external_databases = await process_fields(
         fibery_client, schema, database, collect_external_databases=True

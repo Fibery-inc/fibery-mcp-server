@@ -217,3 +217,26 @@ class FiberyClient:
         )
         result = result["data"]
         return GetDocumentResponse(result["secret"], result["content"]).content
+
+    async def create_document(self, secret: str, content: str) -> str:
+        pass
+
+    async def create_entity(self, database: str, entity: Dict[str, Any]) -> CommandResponse:
+        return await self.execute_command(
+            "fibery.entity/create",
+            {
+                "type": database,
+                "entity": entity,
+            },
+        )
+
+    async def delete_entity(self, database: str, fibery_id: str) -> CommandResponse:
+        return await self.execute_command(
+            "fibery.entity/delete",
+            {
+                "type": database,
+                "entity": {
+                    "fibery/id": fibery_id,
+                },
+            },
+        )
