@@ -99,13 +99,18 @@ class Schema:
 @dataclass
 class CommandResponse:
     success: bool
-    result: List[Dict[str, Any]]
+    result: List[Dict[str, Any]] | Dict[str, Any]
 
 
 @dataclass
 class GetDocumentResponse:
     secret: str
     content: str
+
+@dataclass
+class CreateDocumentResponse:
+    success: bool
+    message: str
 
 
 class FiberyClient:
@@ -188,6 +193,9 @@ class FiberyClient:
         result = result["data"][0]
         return CommandResponse(result["success"], result["result"])
 
+    async def query(self, query: Dict[str, Any], params: Dict[str, Any] | None) -> CommandResponse:
+        return await self.execute_command("fibery.entity/query", {"query": query, "params": params})
+
     async def get_enum_values(self, database_name: str) -> CommandResponse:
         result = await self.fetch_from_fibery(
             "/api/commands",
@@ -218,8 +226,16 @@ class FiberyClient:
         result = result["data"]
         return GetDocumentResponse(result["secret"], result["content"]).content
 
-    async def create_document(self, secret: str, content: str) -> str:
-        pass
+    async def create_document(self, secret: str, content: str) -> CreateDocumentResponse:
+        result = await self.fetch_from_fibery("/api/documents/commands", "POST", {
+            "command": "create-or-update-documents",
+            "args": [{"secret": secret, "content": content}]
+        })
+        result_parsed: bool | Dict[str, Any] = result["data"]
+        if result_parsed is True:
+            return CreateDocumentResponse(True, "Document created successfully")
+        return CreateDocumentResponse(False, result_parsed.get("message", "Failed to create document."))
+
 
     async def create_entity(self, database: str, entity: Dict[str, Any]) -> CommandResponse:
         return await self.execute_command(

@@ -68,7 +68,7 @@ def query_tool() -> mcp.types.Tool:
     )
 
 
-def parse_q_order_by(q_order_by: Dict[str, str]) -> List[Tuple[List[str], str]] | None:
+def parse_q_order_by(q_order_by: Dict[str, str] | None) -> List[Tuple[List[str], str]] | None:
     if not q_order_by:
         return None
     return [([field], q_order) for field, q_order in q_order_by.items()]
@@ -110,9 +110,7 @@ async def handle_query(fibery_client: FiberyClient, arguments: Dict[str, Any]) -
     }
     query = base | optional
 
-    commandResult = await fibery_client.execute_command(
-        "fibery.entity/query", {"query": query, "params": arguments.get("q_params", None)}
-    )
+    commandResult = await fibery_client.query(query, arguments.get("q_params", None))
 
     if not commandResult.success:
         return [mcp.types.TextContent(type="text", text=str(commandResult))]
