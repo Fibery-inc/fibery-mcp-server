@@ -41,7 +41,7 @@ In Claude Desktop, you can access the config in **Settings → Developer → Edi
     }
 }
 ```
-Note: If "uv" command does not work, try absolute path (i.e. /Users/username/.local/bin/uv
+Note: If "uv" command does not work, try absolute path (i.e. /Users/username/.local/bin/uv)
 
 **For Development:**
 
