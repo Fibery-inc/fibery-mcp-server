@@ -25,8 +25,8 @@ def create_entity_tool() -> mcp.types.Tool:
                     "description": "Fibery Database where to create an entity.",
                 },
                 "entity": {
-                    "type": "dict[str, str]",
-                    "description": 'Defines what fields to set in format {"FieldName": value} (i.e. {"Product Management/Name": "My new entity"}).',
+                    "type": "object",
+                    "description": 'Dictionary that defines what fields to set in format {"FieldName": value} (i.e. {"Product Management/Name": "My new entity"}).',
                 },
             },
             "required": ["database", "entity"],

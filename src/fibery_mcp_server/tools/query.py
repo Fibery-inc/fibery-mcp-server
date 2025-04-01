@@ -51,11 +51,11 @@ def query_tool() -> mcp.types.Tool:
                     "description": 'List of sorting criteria in format {"field1": "q/asc", "field2": "q/desc"}',
                 },
                 "q_limit": {
-                    "type": "int",
+                    "type": "integer",
                     "description": "Number of results per page (defaults to 50). Maximum allowed value is 1000",
                 },
                 "q_offset": {
-                    "type": "int",
+                    "type": "integer",
                     "description": "Number of results to skip. Mainly used in combination with limit and orderBy for pagination.",
                 },
                 "q_params": {

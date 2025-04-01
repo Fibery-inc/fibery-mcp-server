@@ -25,10 +25,10 @@ def update_entity_tool() -> mcp.types.Tool:
                     "description": "Fibery Database where to update an entity.",
                 },
                 "entity": {
-                    "type": "dict[str, str]",
+                    "type": "object",
                     "description": "\n".join(
                         [
-                            'Defines what fields to set in format {"FieldName": value} (i.e. {"Product Management/Name": "My new entity"}).',
+                            'Dictionary that defines what fields to set in format {"FieldName": value} (i.e. {"Product Management/Name": "My new entity"}).',
                             'Exception are document fields. For them you must specify append (boolean, whether to append to current content) and content itself: {"Product Management/Description": {"append": true, "content": "Additional info"}}',
                         ]
                     ),
