@@ -18,20 +18,19 @@ To install Fibery MCP Server for Claude Desktop automatically via [Smithery](htt
 npx -y @smithery/cli install @Fibery-inc/fibery-mcp-server --client claude
 ```
 
-### Prerequisites
-
+### Installing via UV
+#### Pre-requisites:
 - A Fibery account with an API token
 - Python 3.10 or higher
 - [uv](https://github.com/astral-sh/uv)
 
+#### Installation Steps:
+1. Install the tool using uv:
 ```bash
 uv tool install fibery-mcp-server
 ```
 
-## 🔌 MCP Integration
-Add this configuration to your MCP client config file. 
-
-In Claude Desktop, you can access the config in **Settings → Developer → Edit Config**:
+2. Then, add this configuration to your MCP client config file. In Claude Desktop, you can access the config in **Settings → Developer → Edit Config**:
 ```json
 {
     "mcpServers": {
