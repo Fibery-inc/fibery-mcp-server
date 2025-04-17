@@ -91,6 +91,10 @@ Offers powerful, flexible access to your Fibery data through the Fibery API.
 
 Creates new entities in your Fibery workspace with specified field values.
 
-#### 5. Update Entity (`update_entity`) 
+#### 5. Create Entities (`create_entities_batch`)
+
+Creates multiple new entities in your Fibery workspace with specified field values.
+
+#### 6. Update Entity (`update_entity`) 
 
 Updates existing entities in your Fibery workspace with new field values.
