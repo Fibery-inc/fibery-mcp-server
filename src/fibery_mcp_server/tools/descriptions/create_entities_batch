@@ -1,0 +1,20 @@
+Create multiple Fibery entities at once with specified fields.
+Examples (note, that these databases are non-existent, use databases only from user's schema!):
+Query: Create some features
+Tool use:
+{
+    "database": "Product Management/Feature",
+    "entities": [
+        {
+            "Product Management/Name": "New Feature 1",
+            "Product Management/Description": "Description of the new feature 1",
+            "workflow/state": "To Do"
+        },
+        {
+            "Product Management/Name": "New Feature 2",
+            "Product Management/Description": "Description of the new feature 2",
+            "workflow/state": "In Progress"
+        }
+    ]
+}
+In case of successful execution, you will get links to created entities. Make sure to give the links to the user.

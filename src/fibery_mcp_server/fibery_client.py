@@ -257,6 +257,20 @@ class FiberyClient:
             },
         )
 
+    async def create_entities_batch(self, database: str, entities: List[Dict[str, Any]]) -> CommandResponse:
+        return await self.execute_command(
+            "fibery.command/batch",
+            {
+                "commands": list(map(lambda entity: {
+                    "command": "fibery.entity/create",
+                    "args": {
+                        "type": database,
+                        "entity": entity
+                    }
+                }, entities)),
+            },
+        )
+
     async def update_entity(self, database: str, entity: Dict[str, Any]) -> CommandResponse:
         return await self.execute_command(
             "fibery.entity/update",

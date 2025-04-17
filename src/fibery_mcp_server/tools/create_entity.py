@@ -1,11 +1,11 @@
 import os
 from uuid import uuid4
-from copy import deepcopy
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any
 
 import mcp
 
-from fibery_mcp_server.fibery_client import FiberyClient, Schema, Database
+from fibery_mcp_server.fibery_client import FiberyClient
+from fibery_mcp_server.utils import create_entity_process_fields
 
 create_entity_tool_name = "create_entity"
 
@@ -34,27 +34,6 @@ def create_entity_tool() -> mcp.types.Tool:
     )
 
 
-async def process_fields(
-    fibery_client: FiberyClient, schema: Schema, database: Database, fields: Dict[str, Any]
-) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
-    rich_text_fields = []
-    safe_fields = deepcopy(fields)
-    for field_name, field_value in fields.items():
-        # process rich-text fields
-        if database.fields_by_name().get(field_name, None).is_rich_text():
-            rich_text_fields.append({"name": field_name, "value": field_value})
-            safe_fields.pop(field_name)
-
-        # process enum fields
-        field_type = database.fields_by_name().get(field_name, None).type
-        if schema.databases_by_name()[field_type].is_enum():
-            enum_values_response = await fibery_client.get_enum_values(field_type)
-            enum_values = enum_values_response.result
-            safe_fields[field_name] = {"fibery/id": next(filter(lambda e: e["Name"] == field_value, enum_values))["Id"]}
-
-    return rich_text_fields, safe_fields
-
-
 async def handle_create_entity(fibery_client: FiberyClient, arguments: Dict[str, Any]) -> List[mcp.types.TextContent]:
     database_name: str = arguments.get("database")
     entity: Dict[str, Any] = arguments.get("entity")
@@ -69,7 +48,7 @@ async def handle_create_entity(fibery_client: FiberyClient, arguments: Dict[str,
     database = schema.databases_by_name()[database_name]
     if not database:
         return [mcp.types.TextContent(type="text", text=f"Error: database {database_name} was not found.")]
-    rich_text_fields, safe_entity = await process_fields(fibery_client, schema, database, entity)
+    rich_text_fields, safe_entity = await create_entity_process_fields(fibery_client, schema, database, entity)
 
     safe_entity["fibery/id"] = str(uuid4())
     creation_result = await fibery_client.create_entity(database_name, safe_entity)
