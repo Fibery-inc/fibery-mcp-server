@@ -1,0 +1,27 @@
+# Smithery configuration file: https://smithery.ai/docs/config#smitheryyaml
+
+startCommand:
+  type: stdio
+  configSchema:
+    # JSON Schema defining the configuration options for the MCP.
+    type: object
+    required:
+      - fiberyHost
+      - fiberyApiToken
+    properties:
+      fiberyHost:
+        type: string
+        description: Your Fibery domain (e.g., your-domain.fibery.io)
+      fiberyApiToken:
+        type: string
+        description: Your Fibery API token.
+  commandFunction:
+    # A JS function that produces the CLI command based on the given config to start the MCP on stdio.
+    |-
+    (config) => ({
+      command: 'fibery-mcp-server',
+      args: ['--fibery-host', config.fiberyHost, '--fibery-api-token', config.fiberyApiToken]
+    })
+  exampleConfig:
+    fiberyHost: example.fibery.io
+    fiberyApiToken: EXAMPLE_TOKEN_1234

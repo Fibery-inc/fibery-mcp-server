@@ -1,4 +1,5 @@
 # Fibery MCP Server
+[![smithery badge](https://smithery.ai/badge/@Fibery-inc/fibery-mcp-server)](https://smithery.ai/server/@Fibery-inc/fibery-mcp-server)
 
 This MCP (Model Context Protocol) server provides integration between Fibery and any LLM provider supporting the MCP protocol (e.g., Claude for Desktop), allowing you to interact with your Fibery workspace using natural language.
 
@@ -8,6 +9,14 @@ This MCP (Model Context Protocol) server provides integration between Fibery and
 - Create and update Fibery entities through conversational interfaces
 
 ## 📦 Installation
+
+### Installing via Smithery
+
+To install Fibery MCP Server for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@Fibery-inc/fibery-mcp-server):
+
+```bash
+npx -y @smithery/cli install @Fibery-inc/fibery-mcp-server --client claude
+```
 
 ### Prerequisites
 
