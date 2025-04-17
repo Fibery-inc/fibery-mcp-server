@@ -3,6 +3,10 @@
 
 This MCP (Model Context Protocol) server provides integration between Fibery and any LLM provider supporting the MCP protocol (e.g., Claude for Desktop), allowing you to interact with your Fibery workspace using natural language.
 
+<a href="https://glama.ai/mcp/servers/@Fibery-inc/fibery-mcp-server">
+  <img width="380" height="200" src="https://glama.ai/mcp/servers/@Fibery-inc/fibery-mcp-server/badge" alt="Fibery Server MCP server" />
+</a>
+
 ## ✨ Features
 - Query Fibery entities using natural language
 - Get information about your Fibery databases and their fields
