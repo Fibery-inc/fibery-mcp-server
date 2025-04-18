@@ -1,5 +1,6 @@
 # Fibery MCP Server
 [![smithery badge](https://smithery.ai/badge/@Fibery-inc/fibery-mcp-server)](https://smithery.ai/server/@Fibery-inc/fibery-mcp-server)
+<a href="https://github.com/Fibery-inc/fibery-mcp-server/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" /></a>
 
 This MCP (Model Context Protocol) server provides integration between Fibery and any LLM provider supporting the MCP protocol (e.g., Claude for Desktop), allowing you to interact with your Fibery workspace using natural language.
 

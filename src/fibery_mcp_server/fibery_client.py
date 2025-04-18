@@ -24,6 +24,9 @@ class Field:
     def is_rich_text(self) -> bool:
         return self.__raw_field.get("fibery/type", None) == "Collaboration~Documents/Document"
 
+    def is_workflow(self) -> bool:
+        return self.__raw_field.get("fibery/name", None) == "workflow/state"
+
     @property
     def type(self) -> str:
         return self.__raw_field["fibery/type"]

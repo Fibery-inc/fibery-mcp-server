@@ -8,12 +8,12 @@ Tool use:
         {
             "Product Management/Name": "New Feature 1",
             "Product Management/Description": "Description of the new feature 1",
-            "workflow/state": "To Do"
+            "workflow/state": "To Do" # notice how we use string literal for workflow field here
         },
         {
             "Product Management/Name": "New Feature 2",
             "Product Management/Description": "Description of the new feature 2",
-            "workflow/state": "In Progress"
+            "workflow/state": "In Progress" # notice how we use string literal for workflow field here
         }
     ]
 }

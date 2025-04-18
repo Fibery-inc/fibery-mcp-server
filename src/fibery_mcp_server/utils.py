@@ -90,6 +90,10 @@ async def create_entity_process_fields(
             rich_text_fields.append({"name": field_name, "value": field_value})
             safe_fields.pop(field_name)
 
+        # process workflow fields
+        if database.fields_by_name().get(field_name, None).is_workflow():
+            if not isinstance(field_value, str):
+                raise ValueError(f"Workflow field '{field_name}' should be a string")
         # process enum fields
         field_type = database.fields_by_name().get(field_name, None).type
         if schema.databases_by_name()[field_type].is_enum():

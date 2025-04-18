@@ -7,7 +7,7 @@ Tool use:
     "entity": {
         "Product Management/Name": "New Feature",
         "Product Management/Description": "Description of the new feature",
-        "workflow/state": "To Do"
+        "workflow/state": "To Do" # notice how we use string literal for workflow field here
     }
 }
 In case of successful execution, you will get a link to created entity. Make sure to give that link to the user.
