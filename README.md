@@ -57,7 +57,7 @@ Note: If "uv" command does not work, try absolute path (i.e. /Users/username/.lo
 ```json
 {
     "mcpServers": {
-        "arxiv-mcp-server": {
+        "fibery-mcp-server": {
             "command": "uv",
             "args": [
                 "--directory",
@@ -96,6 +96,6 @@ Creates new entities in your Fibery workspace with specified field values.
 
 Creates multiple new entities in your Fibery workspace with specified field values.
 
-#### 6. Update Entity (`update_entity`) 
+#### 6. Update Entity (`update_entity`)
 
 Updates existing entities in your Fibery workspace with new field values.
