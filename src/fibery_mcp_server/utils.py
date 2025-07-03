@@ -102,3 +102,7 @@ async def create_entity_process_fields(
             safe_fields[field_name] = {"fibery/id": next(filter(lambda e: e["Name"] == field_value, enum_values))["Id"]}
 
     return rich_text_fields, safe_fields
+
+
+def parse_fibery_host(fibery_host: str) -> str:
+    return fibery_host.replace("https://", "")
