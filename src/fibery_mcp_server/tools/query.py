@@ -1,7 +1,7 @@
 import os
 from copy import deepcopy
 from typing import Dict, Any, List, Tuple
-
+import json
 import mcp
 
 from fibery_mcp_server.fibery_client import FiberyClient, Schema, Database
@@ -36,15 +36,14 @@ def query_tool() -> mcp.types.Tool:
                     ),
                 },
                 "q_where": {
-                    "type": "object",
-                    "description": "\n".join(
-                        [
-                            'Filter conditions in format [operator, [field_path], value] or ["q/and"|"q/or", ...conditions]. Common usages:',
-                            '- Simple comparison: ["=", ["field", "path"], "$param"]. You cannot pass value of $param directly in where clause. Use params object instead. Pay really close attention to it as it is not common practice, but that\'s how it works in our case!',
-                            '- Logical combinations: ["q/and", ["<", ["field1"], "$param1"], ["=", ["field2"], "$param2"]]',
-                            "- Available operators: =, !=, <, <=, >, >=, q/contains, q/not-contains, q/in, q/not-in",
-                        ]
-                    ),
+                    "type": "string",
+                    "description": "\n".join([
+                        'Filter conditions as JSON string in format ["operator", ["field_path"], "value"] or ["q/and"|"q/or", ...conditions]. Common usages:',
+                        '- Simple comparison: \'["=", ["field", "path"], "$param"]\'. You cannot pass value of $param directly in where clause. Use params object instead.',
+                        '- Logical combinations: \'["q/and", ["<", ["field1"], "$param1"], ["=", ["field2"], "$param2"]]\'',
+                        "- Available operators: =, !=, <, <=, >, >=, q/contains, q/not-contains, q/in, q/not-in",
+                        "- Pass as JSON string: The array must be provided as a JSON string that will be parsed server-side",
+                    ]),
                 },
                 "q_order_by": {
                     "type": "object",
@@ -99,15 +98,34 @@ async def handle_query(fibery_client: FiberyClient, arguments: Dict[str, Any]) -
         "q/select": safe_q_select,
         "q/limit": arguments.get("q_limit", 50),
     }
+    # --- Allow q_where to accept string (JSON) or dict/array ---
+    raw_where = arguments.get("q_where", None)
+    normalized_where = None
+
+    if raw_where is not None:
+        if isinstance(raw_where, str):
+            # Parse JSON string to get the actual array/object
+            try:
+                normalized_where = json.loads(raw_where)
+            except json.JSONDecodeError as e:
+                raise ValueError(f"q_where string must be valid JSON: {e}")
+        elif isinstance(raw_where, dict):
+            normalized_where = raw_where
+        elif isinstance(raw_where, list):
+            normalized_where = raw_where
+        else:
+            raise ValueError("q_where must be a JSON string, object, or list of conditions")
+
     optional = {
         k: v
         for k, v in {
-            "q/where": arguments.get("q_where", None),
+            "q/where": normalized_where,
             "q/order-by": parse_q_order_by(arguments.get("q_order_by", None)),
             "q/offset": arguments.get("q_offset", None),
         }.items()
         if v is not None
     }
+
     query = base | optional
 
     commandResult = await fibery_client.query(query, arguments.get("q_params", None))
