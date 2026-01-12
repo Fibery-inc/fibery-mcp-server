@@ -156,6 +156,7 @@ class FiberyClient:
         base_url = f"https://{self.__fibery_host}"
         headers = {
             "Content-Type": "application/json",
+            "User-Agent": "fibery-local-mcp-server",
             "Authorization": f"Bearer {self.__fibery_api_token}",
         }
 
