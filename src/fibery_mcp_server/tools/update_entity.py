@@ -61,7 +61,8 @@ async def process_fields(
 
         # process enum fields
         field_type = field.type
-        if schema.databases_by_name().get(field_type) and schema.databases_by_name()[field_type].is_enum():
+        field_type_db = schema.databases_by_name().get(field_type)
+        if field_type_db and field_type_db.is_enum():
             enum_values_response = await fibery_client.get_enum_values(field_type)
             enum_values = enum_values_response.result
             safe_fields[field_name] = {"fibery/id": next(filter(lambda e: e["Name"] == field_value, enum_values))["Id"]}
