@@ -1,4 +1,6 @@
+import json
 import os
+from dataclasses import asdict
 from uuid import uuid4
 from typing import List, Dict, Any
 
@@ -59,7 +61,7 @@ async def handle_create_entities_batch(fibery_client: FiberyClient, arguments: D
     creation_batch_result = await fibery_client.create_entities_batch(database_name, safe_entities)
 
     if not creation_batch_result.success:
-        return [mcp.types.TextContent(type="text", text=str(creation_batch_result))]
+        return [mcp.types.TextContent(type="text", text=json.dumps(asdict(creation_batch_result)))]
 
     entities_info = []
     for creation_result in creation_batch_result.result:
@@ -88,7 +90,7 @@ async def handle_create_entities_batch(fibery_client: FiberyClient, arguments: D
                     ]
                 doc_result = await fibery_client.create_or_update_document(secret, field["value"])
                 if not doc_result.success:
-                    return [mcp.types.TextContent(type="text", text=str(doc_result))]
+                    return [mcp.types.TextContent(type="text", text=json.dumps(asdict(doc_result)))]
 
         public_id = creation_result_command.result["fibery/public-id"]
         url = fibery_client.compose_url(database_name.split("/")[0], database_name.split("/")[1], public_id)
@@ -96,6 +98,6 @@ async def handle_create_entities_batch(fibery_client: FiberyClient, arguments: D
     entities_info_str = list(map(lambda ent: f'\nfibery/id: "{ent["id"]}" URL: "{ent["url"]}"', entities_info))
     return [
         mcp.types.TextContent(
-            type="text", text=str(f'{len(creation_batch_result.result)} entities created successfully.List of created entities:{entities_info_str}')
+            type="text", text=str(f'{len(creation_batch_result.result)} entities created successfully. List of created entities:{entities_info_str}')
         )
     ]

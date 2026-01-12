@@ -1,5 +1,7 @@
+import json
 import os
 from copy import deepcopy
+from dataclasses import asdict
 from typing import List, Dict, Any, Tuple
 
 import mcp
@@ -88,7 +90,7 @@ async def handle_update_entity(fibery_client: FiberyClient, arguments: Dict[str,
     update_result = await fibery_client.update_entity(database_name, safe_entity)
 
     if not update_result.success:
-        return [mcp.types.TextContent(type="text", text=str(update_result))]
+        return [mcp.types.TextContent(type="text", text=json.dumps(asdict(update_result)))]
 
     if len(rich_text_fields) > 0:
         secrets_response = await fibery_client.query(
@@ -113,7 +115,7 @@ async def handle_update_entity(fibery_client: FiberyClient, arguments: Dict[str,
                 ]
             doc_result = await fibery_client.create_or_update_document(secret, field["value"], append=field["append"])
             if not doc_result.success:
-                return [mcp.types.TextContent(type="text", text=str(doc_result))]
+                return [mcp.types.TextContent(type="text", text=json.dumps(asdict(doc_result)))]
 
     public_id = await fibery_client.get_public_id_by_id(database_name, safe_entity["fibery/id"])
     url = fibery_client.compose_url(database_name.split("/")[0], database_name.split("/")[1], public_id)

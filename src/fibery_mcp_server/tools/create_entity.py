@@ -1,4 +1,6 @@
+import json
 import os
+from dataclasses import asdict
 from uuid import uuid4
 from typing import List, Dict, Any
 
@@ -54,7 +56,7 @@ async def handle_create_entity(fibery_client: FiberyClient, arguments: Dict[str,
     creation_result = await fibery_client.create_entity(database_name, safe_entity)
 
     if not creation_result.success:
-        return [mcp.types.TextContent(type="text", text=str(creation_result))]
+        return [mcp.types.TextContent(type="text", text=json.dumps(asdict(creation_result)))]
 
     if len(rich_text_fields) > 0:
         secrets_response = await fibery_client.query(
@@ -79,7 +81,7 @@ async def handle_create_entity(fibery_client: FiberyClient, arguments: Dict[str,
                 ]
             doc_result = await fibery_client.create_or_update_document(secret, field["value"])
             if not doc_result.success:
-                return [mcp.types.TextContent(type="text", text=str(doc_result))]
+                return [mcp.types.TextContent(type="text", text=json.dumps(asdict(doc_result)))]
 
     public_id = creation_result.result["fibery/public-id"]
     url = fibery_client.compose_url(database_name.split("/")[0], database_name.split("/")[1], public_id)

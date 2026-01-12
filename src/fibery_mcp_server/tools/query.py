@@ -1,5 +1,7 @@
+import json
 import os
 from copy import deepcopy
+from dataclasses import asdict
 from typing import Dict, Any, List, Tuple
 
 import mcp
@@ -114,7 +116,7 @@ async def handle_query(fibery_client: FiberyClient, arguments: Dict[str, Any]) -
     commandResult = await fibery_client.query(query, arguments.get("q_params", None))
 
     if not commandResult.success:
-        return [mcp.types.TextContent(type="text", text=str(commandResult))]
+        return [mcp.types.TextContent(type="text", text=json.dumps(asdict(commandResult)))]
 
     for i, entity in enumerate(commandResult.result):
         for field in rich_text_fields:
@@ -126,4 +128,4 @@ async def handle_query(fibery_client: FiberyClient, arguments: Dict[str, Any]) -
                     )
                 ]
             entity[field["alias"]] = await fibery_client.get_document_content(secret)
-    return [mcp.types.TextContent(type="text", text=str(commandResult))]
+    return [mcp.types.TextContent(type="text", text=json.dumps(asdict(commandResult)))]
