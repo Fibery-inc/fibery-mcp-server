@@ -18,7 +18,11 @@ def database_tool() -> mcp.types.Tool:
                 "database_name": {
                     "type": "string",
                     "description": "Database name as defined in Fibery schema",
-                }
+                },
+                "include_external_databases": {
+                    "type": "boolean",
+                    "description": "Whether to include fields from related/external databases. Defaults to true. Set to false to reduce context size.",
+                },
             },
             "required": ["database_name"],
         },
@@ -39,6 +43,8 @@ async def handle_database(fibery_client: FiberyClient, arguments: Dict[str, Any]
     if not database_name:
         return [mcp.types.TextContent(type="text", text="Error: database_name is not provided.")]
 
+    include_external: bool = arguments.get("include_external_databases", True)
+
     database: Database | None = schema.databases_by_name().get(database_name, None)
     if not database:
         return [mcp.types.TextContent(type="text", text=f"Error: database {database_name} was not found.")]
@@ -49,13 +55,14 @@ async def handle_database(fibery_client: FiberyClient, arguments: Dict[str, Any]
         return [mcp.types.TextContent(type="text", text="There are no fields found in this Fibery database.")]
 
     prettified_fields, external_databases = await prettify_fields(
-        fibery_client, schema, database, collect_external_databases=True
+        fibery_client, schema, database, collect_external_databases=include_external
     )
-    external_prettified_databases = [
-        (db.name, (await prettify_fields(fibery_client, schema, db))[0]) for db in external_databases
-    ]
 
-    content = ""
-    for db, fields in [(database.name, prettified_fields)] + external_prettified_databases:
-        content += describe_database(db, fields)
+    content = describe_database(database.name, prettified_fields)
+
+    if include_external:
+        for db in external_databases:
+            ext_fields, _ = await prettify_fields(fibery_client, schema, db)
+            content += describe_database(db.name, ext_fields)
+
     return [mcp.types.TextContent(type="text", text=content)]
