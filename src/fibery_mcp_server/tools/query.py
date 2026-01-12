@@ -81,7 +81,8 @@ def get_rich_text_fields(q_select: Dict[str, Any], database: Database) -> Tuple[
         if not isinstance(field_name, str):
             if isinstance(field_name, list):
                 field_name = field_name[0]
-        if database.fields_by_name().get(field_name, None).is_rich_text():
+        field = database.fields_by_name().get(field_name, None)
+        if field is not None and field.is_rich_text():
             rich_text_fields.append({"alias": field_alias, "name": field_name})
             safe_q_select[field_alias] = [field_name, "Collaboration~Documents/secret"]
     return rich_text_fields, safe_q_select
