@@ -47,9 +47,9 @@ async def handle_create_entity(fibery_client: FiberyClient, arguments: Dict[str,
         return [mcp.types.TextContent(type="text", text="Error: entity is not provided.")]
 
     schema = await fibery_client.get_schema()
-    database = schema.databases_by_name()[database_name]
+    database = schema.databases_by_name().get(database_name)
     if not database:
-        return [mcp.types.TextContent(type="text", text=f"Error: database {database_name} was not found.")]
+        return [mcp.types.TextContent(type="text", text=f"Error: database '{database_name}' was not found.")]
     rich_text_fields, safe_entity = await create_entity_process_fields(fibery_client, schema, database, entity)
 
     safe_entity["fibery/id"] = str(uuid4())

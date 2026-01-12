@@ -47,9 +47,9 @@ async def handle_create_entities_batch(fibery_client: FiberyClient, arguments: D
         return [mcp.types.TextContent(type="text", text="Error: entities is not provided.")]
 
     schema = await fibery_client.get_schema()
-    database = schema.databases_by_name()[database_name]
+    database = schema.databases_by_name().get(database_name)
     if not database:
-        return [mcp.types.TextContent(type="text", text=f"Error: database {database_name} was not found.")]
+        return [mcp.types.TextContent(type="text", text=f"Error: database '{database_name}' was not found.")]
 
     safe_entities = []
     rich_text_fields_map = {}

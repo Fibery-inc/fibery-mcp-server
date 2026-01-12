@@ -47,16 +47,21 @@ async def process_fields(
     rich_text_fields = []
     safe_fields = deepcopy(fields)
     for field_name, field_value in fields.items():
+        field = database.fields_by_name().get(field_name, None)
+        if field is None:
+            raise ValueError(f"Field '{field_name}' not found in database '{database.name}'")
+
         # process rich-text fields
-        if database.fields_by_name().get(field_name, None).is_rich_text():
+        if field.is_rich_text():
             rich_text_fields.append(
                 {"name": field_name, "append": str_to_bool(field_value["append"]), "value": field_value["content"]}
             )
             safe_fields.pop(field_name)
+            continue
 
         # process enum fields
-        field_type = database.fields_by_name().get(field_name, None).type
-        if schema.databases_by_name()[field_type].is_enum():
+        field_type = field.type
+        if schema.databases_by_name().get(field_type) and schema.databases_by_name()[field_type].is_enum():
             enum_values_response = await fibery_client.get_enum_values(field_type)
             enum_values = enum_values_response.result
             safe_fields[field_name] = {"fibery/id": next(filter(lambda e: e["Name"] == field_value, enum_values))["Id"]}
@@ -74,7 +79,7 @@ async def handle_update_entity(fibery_client: FiberyClient, arguments: Dict[str,
     if not entity:
         return [mcp.types.TextContent(type="text", text="Error: entity is not provided.")]
 
-    if not entity["fibery/id"]:
+    if not entity.get("fibery/id"):
         return [
             mcp.types.TextContent(
                 type="text", text="Error: entity id is not provided. Use 'fibery/id' field to set it."
@@ -82,9 +87,9 @@ async def handle_update_entity(fibery_client: FiberyClient, arguments: Dict[str,
         ]
 
     schema = await fibery_client.get_schema()
-    database = schema.databases_by_name()[database_name]
+    database = schema.databases_by_name().get(database_name)
     if not database:
-        return [mcp.types.TextContent(type="text", text=f"Error: database {database_name} was not found.")]
+        return [mcp.types.TextContent(type="text", text=f"Error: database '{database_name}' was not found.")]
     rich_text_fields, safe_entity = await process_fields(fibery_client, schema, database, entity)
 
     update_result = await fibery_client.update_entity(database_name, safe_entity)
