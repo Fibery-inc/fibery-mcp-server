@@ -33,6 +33,7 @@ def query_tool() -> mcp.types.Tool:
                             '  - Primitive fields using format {"AliasName": "FieldName"} (i.e. {"Name": "Product Management/Name"})',
                             '  - Related entity fields using format {"AliasName": ["Related entity", "related entity field"]} (i.e. {"Secret": ["Product Management/Description", "Collaboration~Documents/secret"]}). Careful, does not work with 1-* connection!',
                             'To work with 1-* relationships, you can use sub-querying: {"AliasName": {"q/from": "Related type", "q/select": {"AliasName 2": "fibery/id"}, "q/limit": 50}}',
+                            "Note: sub-queries use q/from, q/select, q/limit (with slashes), unlike top-level parameters that use underscores.",
                             "AliasName can be of any arbitrary value.",
                         ]
                     ),
@@ -65,7 +66,7 @@ def query_tool() -> mcp.types.Tool:
                     "description": 'Dictionary of parameter values referenced in where using "$param" syntax. For example, {$fromDate: "2025-01-01"}',
                 },
             },
-            "required": ["q_from", "q_select"],
+            "required": ["q_from", "q_select", "q_limit"],
         },
     )
 
@@ -80,6 +81,9 @@ def get_rich_text_fields(q_select: Dict[str, Any], database: Database) -> Tuple[
     rich_text_fields = []
     safe_q_select = deepcopy(q_select)
     for field_alias, field_name in safe_q_select.items():
+        # Skip sub-queries (dicts with q/from, q/select, etc.)
+        if isinstance(field_name, dict):
+            continue
         if not isinstance(field_name, str):
             if isinstance(field_name, list):
                 field_name = field_name[0]
@@ -94,7 +98,7 @@ async def handle_query(fibery_client: FiberyClient, arguments: Dict[str, Any]) -
     q_from, q_select = arguments["q_from"], arguments["q_select"]
 
     schema: Schema = await fibery_client.get_schema()
-    database = schema.databases_by_name()[arguments["q_from"]]
+    database = schema.databases_by_name()[q_from]
     rich_text_fields, safe_q_select = get_rich_text_fields(q_select, database)
 
     base = {
