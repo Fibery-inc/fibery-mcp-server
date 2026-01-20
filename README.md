@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/fibery-inc-fibery-mcp-server-badge.png)](https://mseep.ai/app/fibery-inc-fibery-mcp-server)
+
 # Fibery MCP Server
 [![smithery badge](https://smithery.ai/badge/@Fibery-inc/fibery-mcp-server)](https://smithery.ai/server/@Fibery-inc/fibery-mcp-server)
 <a href="https://github.com/Fibery-inc/fibery-mcp-server/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" /></a>
