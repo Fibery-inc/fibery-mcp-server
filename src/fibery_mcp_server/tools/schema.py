@@ -11,7 +11,7 @@ def schema_tool() -> mcp.types.Tool:
     return mcp.types.Tool(
         name=schema_tool_name,
         description="Get list of all databases (their names) in user's Fibery workspace (schema)",
-        inputSchema={"type": "object"},
+        inputSchema={"type": "object", "properties": {}},
     )
 
 
