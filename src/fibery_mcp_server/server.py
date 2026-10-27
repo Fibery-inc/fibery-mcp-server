@@ -49,6 +49,11 @@ async def serve(fibery_host: str, fibery_api_token: str) -> Server:
     help="Fibery API Token",
 )
 def main(fibery_host: str, fibery_api_token: str) -> None:
+    print(
+        "WARNING: fibery-mcp-server is deprecated and no longer maintained. "
+        "Switch to the remote Fibery MCP server: https://mcp.fibery.io/mcp",
+        file=sys.stderr,
+    )
     parsed_fibery_host = parse_fibery_host(fibery_host)
     async def _run() -> None:
         async with mcp.stdio_server() as (read_stream, write_stream):

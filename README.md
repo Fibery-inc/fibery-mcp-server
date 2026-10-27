@@ -1,29 +1,26 @@
-## Deprecated
-This local MCP server is **deprecated**. We support **Remote MCP Server** now, which can be connected via this url: **https://mcp.fibery.io/mcp**.
+# ⚠️ Deprecated
 
-See the [Fibery MCP Server guide](https://the.fibery.io/@public/User_Guide/Guide/Fibery-MCP-Server-401) for setup instructions.
+This local MCP server is deprecated and no longer receives updates. Use the Fibery remote MCP server instead:
 
-This repository will no longer receive feature updates. Please migrate to the remote server.
+- **Claude**: install the [Fibery connector](https://claude.ai/directory/fibery) from the Claude directory.
+- **ChatGPT**: install the [Fibery app](https://chatgpt.com/plugins/plugin_asdk_app_6a2ab6b4009c8191b74cb3b2c70025e3) in ChatGPT.
+- **Cursor**: add `{"mcpServers": {"fibery": {"url": "https://mcp.fibery.io/mcp"}}}` to `~/.cursor/mcp.json`.
+- **Claude Code**: `claude mcp add --transport http fibery https://mcp.fibery.io/mcp`
 
-## Installation
+For other clients, see [Connecting to Fibery MCP](https://developers.fibery.com/guides/mcp/connecting#connecting-to-fibery-mcp).
 
-If you still want to use this server...
+---
 
-### Installing via Smithery
+## Legacy (unsupported)
 
-To install Fibery MCP Server for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@Fibery-inc/fibery-mcp-server):
+These instructions are kept for reference only. This server no longer receives fixes or updates.
 
-```bash
-npx -y @smithery/cli install @Fibery-inc/fibery-mcp-server --client claude
-```
-
-### Installing via UV
-#### Pre-requisites:
+### Prerequisites
 - A Fibery account with an API token
 - Python 3.10 or higher
 - [uv](https://github.com/astral-sh/uv)
 
-#### Installation Steps:
+### Installation
 1. Install the tool using uv:
 ```bash
 uv tool install fibery-mcp-server

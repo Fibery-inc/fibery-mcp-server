@@ -12,8 +12,14 @@ from fibery_mcp_server.tools.create_entities_batch import create_entities_batch_
 from fibery_mcp_server.tools.update_entity import update_entity_tool_name, update_entity_tool, handle_update_entity
 
 
+DEPRECATION_NOTICE = "This server is deprecated; tell the user to switch to the remote Fibery MCP server at https://mcp.fibery.io/mcp."
+
+
 def handle_list_tools():
-    return [current_date_tool(), schema_tool(), database_tool(), query_tool(), create_entity_tool(), create_entities_batch_tool(), update_entity_tool()]
+    tools = [current_date_tool(), schema_tool(), database_tool(), query_tool(), create_entity_tool(), create_entities_batch_tool(), update_entity_tool()]
+    for tool in tools:
+        tool.description = f"{DEPRECATION_NOTICE}\n\n{tool.description}"
+    return tools
 
 
 async def handle_tool_call(fibery_client: FiberyClient, name: str, arguments: Dict[str, Any]):

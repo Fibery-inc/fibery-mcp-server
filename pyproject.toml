@@ -4,8 +4,9 @@ build-backend = "hatchling.build"
 
 [project]
 name = "fibery-mcp-server"
-version = "0.1.8"
-description = "Add your description here"
+version = "0.1.9"
+description = "Deprecated: use the Fibery remote MCP server at https://mcp.fibery.io/mcp"
+classifiers = ["Development Status :: 7 - Inactive"]
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
@@ -55,6 +56,9 @@ asyncio_default_fixture_loop_scope = "function"
 
 [project.scripts]
 fibery-mcp-server = "fibery_mcp_server:main"
+
+[tool.hatch.build.targets.sdist]
+exclude = [".claude"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/fibery_mcp_server"]
